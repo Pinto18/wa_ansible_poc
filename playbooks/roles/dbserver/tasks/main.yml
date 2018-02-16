@@ -1,0 +1,28 @@
+---
+# tasks file for mysql
+
+- name: Install MySQL
+  win_chocolatey:
+    name: "{{ item }}" 
+    state: present
+  with_items: "{{ mysql_packages }}"
+
+- name: Start MySQL Service
+  win_service:
+    name: mysql
+    state: started
+    
+- name: Create Dump File Directory
+  win_file:
+    path: "{{ db_dump_directory }}"
+    state: directory
+
+- name: Copy Database Dump File
+  win_copy:
+    src: ~/biel_playbooks/playbooks/roles/dbserver/files/bibletranslationtools.sql
+    dest: "{{ mysql_dump_path }}"
+
+- name: Create DB From Dump File
+  win_shell: "mysql < bibletranslationtools.sql"
+  args:
+    chdir: "{{ db_dump_directory }}"

@@ -1,0 +1,5 @@
+---
+- name: Deploy BIEL in a Dev Environment
+  hosts: windows 
+  roles:
+    - common

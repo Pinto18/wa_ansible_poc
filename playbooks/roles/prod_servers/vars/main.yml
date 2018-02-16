@@ -1,0 +1,12 @@
+---
+# vars file for prod_servers
+venv_home: "{{ ansible_env.USERPROFILE}}"
+user: "{{ ansible_ssh_user }}"
+repo_url: https://github.com/WycliffeAssociates/bibletranslationtools.git
+proj_name: bibletranslationtools
+proj_path: "{{ venv_home }}/{{ proj_name }}"
+db_path: "{{ ansible_env.TEMP }}/bibletranslationtools"
+choco_packages:
+  - mysql
+  - git
+  - nodejs

@@ -1,0 +1,6 @@
+# inventory file for development servers
+[windows]
+ansible_test_1 ansible_host=172.19.146.145
+
+[nicks-machine]
+my-machine ansible_host=172.19.145.76

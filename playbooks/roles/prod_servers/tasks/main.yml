@@ -1,0 +1,31 @@
+---
+# tasks file for prod_servers
+- name: Install Packages
+  win_chocolatey:
+    name: "{{ choco_packages }}"
+    state: present
+
+- name: Update All Packages
+    name: all
+    state: latest
+
+- name: Create Project Directory
+  win_file: 
+    path: "{{ proj_path }}"
+    state: directory
+
+- name: Create DB Directory
+  win_file:
+    path: "{{ db_path }}"
+    state: directory
+
+- name: Copy DB File
+  win_copy: 
+    src: ./roles/common/files/bibletranslationtools.sql
+    dest: "{{ db_path }}/bibletranslationtools.sql"
+  
+- name: Clone Git Repo
+  win_git:
+    name: "{{ repo_url }}"
+    dest: "{{ proj_path }}"
+    replace_dest: yes

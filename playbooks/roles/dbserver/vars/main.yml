@@ -1,0 +1,6 @@
+---
+# vars file for mysql
+db_dump_directory: "{{ansible_env.TEMP}}/bibletranslationtools"
+mysql_dump_path: "{{ db_dump_directory }}/bibletranslationtools.sql"
+mysql_packages: 
+  - mysql

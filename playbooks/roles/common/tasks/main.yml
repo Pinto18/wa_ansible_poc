@@ -1,0 +1,74 @@
+---
+# tasks file for roles
+- name: Check if Docker Windows Service is already configured
+  win_service:
+    name: docker
+  register: docker_service_info
+  ignore_errors: yes
+
+- name: Stop Old Docker Windows Service If It Exists
+  win_service:
+    name: docker
+    state: stopped
+  when: docker_service_info.exists == True
+
+- name: Remove Old Docker Windows Service If It Exists
+  win_shell: "{{ dockerd_exe_path }} --unregister-service"
+  when: docker_service_info.exists == True
+  ignore_errors: yes
+
+- name: Install Packages
+  win_chocolatey:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - docker
+    - docker-compose
+    - python3
+    - git
+
+- name: Upgrade Installed Packages
+  win_chocolatey:
+    name: all
+    state: latest
+
+- name: Register Docker as a Windows Service
+  win_shell: "{{ dockerd_exe_path }} --register-service"
+  ignore_errors: yes
+
+- name: Start Docker as Windows Service
+  win_service:
+    name: docker
+    state: started
+
+- name: Reboot Windows Box
+  win_reboot:
+    reboot_timeout_sec: 40
+    shutdown_timeout_sec: 40
+  ignore_errors: yes
+
+- name: Create Project Directory
+  win_file: 
+    path: "{{ proj_path }}"
+    state: directory
+
+- name: Create DB Directory
+  win_file:
+    path: "{{ db_path }}"
+    state: directory
+
+- name: Copy DB File
+  win_copy: 
+    src: ./roles/common/files/bibletranslationtools.sql
+    dest: "{{ db_path }}/bibletranslationtools.sql"
+  
+- name: Clone Git Repo
+  win_git:
+    name: "{{ repo_url }}"
+    dest: "{{ proj_path }}"
+    replace_dest: yes
+
+- name: run the docker container
+  win_shell: "docker-compose up -d"
+  args:
+    chdir: "{{ proj_path }}/bibletranslationtools"
